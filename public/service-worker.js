@@ -7,6 +7,7 @@ const FILES_TO_CACHE = [
   "/db.js",
   "/favicon.ico",
   "/manifest.webmanifest",
+  "/service-worker.js",
   "/style.css",
   "/icons/icon-192x192.png",
   "/icons/icon-512x512.png"
@@ -14,38 +15,49 @@ const FILES_TO_CACHE = [
 
 // install
 self.addEventListener("install", function (evt) {
-    // pre cache image data
-    evt.waitUntil(
-      caches.open(DATA_CACHE_NAME).then((cache) => cache.add("/api/icons"))
-    );
-      
-    // pre cache all static assets
-    evt.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
-    );
+  evt.waitUntil(
+    caches
+      .open(cacheName)
+      .then((cache)=>{  return cache.addAll(cacheData)
+
+      }  
+          )
+      .then(self.skipWaiting())
+  );
+
   
-    // tell the browser to activate this service worker immediately once it
-    // has finished installing
-    self.skipWaiting();
+    // // pre cache image data
+    // evt.waitUntil(
+    //   caches.open(DATA_CACHE_NAME).then((cache) => cache.add("/api/icons"))
+    // );
+      
+    // // pre cache all static assets
+    // evt.waitUntil(
+    //   caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+    // );
+  
+    // // tell the browser to activate this service worker immediately once it
+    // // has finished installing
+    // self.skipWaiting();
   });
   
   // activate
-  self.addEventListener("activate", function(evt) {
-    evt.waitUntil(
-      caches.keys().then(keyList => {
-        return Promise.all(
-          keyList.map(key => {
-            if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
-              console.log("Removing old cache data", key);
-              return caches.delete(key);
-            }
-          })
-        );
-      })
-    );
+  // self.addEventListener("activate", function(evt) {
+  //   evt.waitUntil(
+  //     caches.keys().then(keyList => {
+  //       return Promise.all(
+  //         keyList.map(key => {
+  //           if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
+  //             console.log("Removing old cache data", key);
+  //             return caches.delete(key);
+  //           }
+  //         })
+  //       );
+  //     })
+  //   );
   
-    self.clients.claim();
-  });
+  //   self.clients.claim();
+  // });
   
   // fetch
   self.addEventListener("fetch", function(evt) {
@@ -54,12 +66,15 @@ self.addEventListener("install", function (evt) {
         caches.open(DATA_CACHE_NAME).then(cache => {
           return fetch(evt.request)
             .then(response => {
-              // If the response was good, clone it and store it in the cache.
-              if (response.status === 200) {
-                cache.put(evt.request.url, response.clone());
-              }
+              return cache.put(evt.request, response.clone()).then(() => {
+                return response;
+
+              // // If the response was good, clone it and store it in the cache.
+              // if (response.status === 200) {
+              //   cache.put(evt.request.url, response.clone());
+              // }
   
-              return response;
+              // return response;
             })
             .catch(err => {
               // Network request failed, try to get it from the cache.
