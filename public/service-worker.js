@@ -1,29 +1,39 @@
+//sw files and alternate functions
+
+//sw cach files and names
+
 const CACHE_NAME = "static-cache-v2";
 const DATA_CACHE_NAME = "data-cache-v1";
 const FILES_TO_CACHE = [
   "/",
-  "/index.html",
-  "/index.js",
-  "/db.js",
-  "/favicon.ico",
-  "/manifest.webmanifest",
-  "/style.css",
-  "/icons/icon-192x192.png",
-  "/icons/icon-512x512.png"
+  "/OffLineBudgetTracker/Public/index.html",
+  "/OffLineBudgetTracker/Public/index.js",
+  "/OffLineBudgetTracker/Public/db.js",
+  "/OffLineBudgetTracker/Public/manifest.webmanifest",
+  "/OffLineBudgetTracker/Public/style.css",
+  "/OffLineBudgetTracker/Public/icons/icon-192x192.png",
+  "/OffLineBudgetTracker/Public/icons/icon-512x512.png"
 ];
 
 // install
 self.addEventListener("install", function (evt) {
-    // pre cache image data
-    evt.waitUntil(
-      caches.open(DATA_CACHE_NAME).then((cache) => cache.add("/api/icons"))
-    );
+    // // pre cache image data
+    // evt.waitUntil(
+    //   caches.open(DATA_CACHE_NAME).then((cache) => cache.add("/api/icons"))
+    // );
       
-    // pre cache all static assets
-    evt.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
-    );
+    // // pre cache all static assets
+    // evt.waitUntil(
+    //   caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+    // );
   
+    evt.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        console.log("files pre-cashe Complete!");
+        return cache.addAll(FILES_TO_CACHE)
+      })
+    );
+
     // tell the browser to activate this service worker immediately once it
     // has finished installing
     self.skipWaiting();
