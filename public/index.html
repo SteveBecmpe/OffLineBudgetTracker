@@ -45,15 +45,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
   <!-- Missing Link to db.js File -->
   <script src="index.js"></script>
-  <script>
-    // register service worker
-      if ("serviceWorker" in navigator) {
-       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js" , {scope: "/"}).then(reg => {
-        console.log("We found your service worker file!", reg);
-    });
-  });
-}
-  </script>
+  <script src="db.js"></script>
+
 </body>
 </html>
